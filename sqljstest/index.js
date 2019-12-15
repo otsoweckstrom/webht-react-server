@@ -3,6 +3,8 @@ const cors = require("cors");
 const mysql = require("mysql");
 
 const SELECT_ALL_FROM_USERS = "SELECT * FROM users";
+const SELECT_ALL_FROM_POSTS = "SELECT * FROM posts";
+const SELECT_FROM_POSTS_WHERE = "SELECT * FROM posts WHERE id_post = ";
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -35,6 +37,17 @@ app.get("/users", (req, res) => {
     }
   });
 });
+app.get("/posts", (req, res) => {
+  connection.query(SELECT_ALL_FROM_POSTS, (err, results) => {
+    if (err) {
+      return res.send(err);
+    } else {
+      return res.json({
+        data: results
+      });
+    }
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("Haloo");
@@ -49,6 +62,18 @@ app.get("/signup", (req, res) => {
       return res.send(err);
     } else {
       return res.send("Signed up");
+    }
+  });
+});
+app.get("/createpost", (req, res) => {
+  const { username, post_title, post_content } = req.query;
+  const INSERT_NEW_POST = `INSERT INTO posts(username, post_title, post_content) VALUES('${username}', '${post_title}', '${post_content}')`;
+
+  connection.query(INSERT_NEW_POST, (err, results) => {
+    if (err) {
+      return res.send(err);
+    } else {
+      return res.send("Post Created");
     }
   });
 });
